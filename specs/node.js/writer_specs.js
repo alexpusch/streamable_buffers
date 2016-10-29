@@ -3,13 +3,12 @@ const expect = chai.expect;
 const Readable = require('stream').Readable
 var concat = require('concat-stream')
 
-const StreamableBufferWriter = require('../lib/writer.js')
-
+const StreamableBuffers = require('../../lib')
 const SIZE_OF_INT = 4
 
 describe('StreamableBufferWriter', () => {
   it('writes the number of elements in the first int of the stream', (callback) => {
-    const stream = new StreamableBufferWriter(1)
+    const stream = StreamableBuffers.getCreatorStream(1)
 
     const buffer = Buffer.alloc(SIZE_OF_INT)
     buffer.writeUInt32BE(1)
@@ -24,7 +23,7 @@ describe('StreamableBufferWriter', () => {
   })
 
   it('writes the size of the first element', (callback) => {
-    const stream = new StreamableBufferWriter(1)
+    const stream = StreamableBuffers.getCreatorStream(1)
     const buffer = createUintBuffer([1])
 
     stream.pipe(concat((output) => {
@@ -37,7 +36,7 @@ describe('StreamableBufferWriter', () => {
   })
 
   it('writes the first element', (callback) => {
-    const stream = new StreamableBufferWriter(1)
+    const stream = StreamableBuffers.getCreatorStream(1)
     const buffer = createUintBuffer([1])
 
     stream.pipe(concat((output) => {
@@ -50,7 +49,7 @@ describe('StreamableBufferWriter', () => {
   })
 
   it('can write several elements', (callback) => {
-    const stream = new StreamableBufferWriter(3)
+    const stream = StreamableBuffers.getCreatorStream(3)
 
     const buffer1 = createUintBuffer([1])
     const buffer2 = createUintBuffer([2])

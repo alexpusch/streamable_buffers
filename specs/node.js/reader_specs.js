@@ -2,9 +2,8 @@ const chai = require('chai')
 const expect = chai.expect;
 const Readable = require('stream').Readable
 
-const StreamableBufferReader = require('../lib/reader.js')
+const StreamableBuffer = require('../../lib')
 let SIZE_OF_INT = 4
-
 
 class HelperStream extends Readable {
   writeUintArray(uintArray) {
@@ -28,7 +27,7 @@ describe('reader', () => {
   })
 
   it("reads a single element", (callback) => {
-    let stream = testStream.pipe(new StreamableBufferReader())
+    let stream = testStream.pipe(StreamableBuffer.getReaderStream())
 
     stream.on('data', (buffer) => {
       expect(buffer.length).to.equal(SIZE_OF_INT)
@@ -41,7 +40,7 @@ describe('reader', () => {
 
 
   it("reads a two elements in the same read", (callback) => {
-    let stream = testStream.pipe(new StreamableBufferReader())
+    let stream = testStream.pipe(StreamableBuffer.getReaderStream())
 
     let elementsCount = 0
     stream.on('data', (buffer) => {
@@ -63,7 +62,7 @@ describe('reader', () => {
   })
 
   it("reads a two elements in two read", (callback) => {
-    let stream = testStream.pipe(new StreamableBufferReader())
+    let stream = testStream.pipe(StreamableBuffer.getReaderStream())
 
     let elementsCount = 0
     stream.on('data', (buffer) => {
@@ -86,7 +85,7 @@ describe('reader', () => {
   })
 
   it('handles variant size buffers', (callback) => {
-    let stream = testStream.pipe(new StreamableBufferReader())
+    let stream = testStream.pipe(StreamableBuffer.getReaderStream())
 
     let elementsCount = 0
     stream.on('data', (buffer) => {
@@ -108,7 +107,7 @@ describe('reader', () => {
   })
 
   it('handles leftover', (callback) => {
-    let stream = testStream.pipe(new StreamableBufferReader())
+    let stream = testStream.pipe(StreamableBuffer.getReaderStream())
 
     let elementsCount = 0
     stream.on('data', (buffer) => {
@@ -131,7 +130,7 @@ describe('reader', () => {
   })
 
   it('handles leftover over several chunks', (callback) => {
-    let stream = testStream.pipe(new StreamableBufferReader())
+    let stream = testStream.pipe(StreamableBuffer.getReaderStream())
 
     let elementsCount = 0
     stream.on('data', (buffer) => {
