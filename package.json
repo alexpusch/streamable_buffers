@@ -2,7 +2,7 @@
   "name": "streamable_buffers",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "lib/index.js",
   "scripts": {
     "test": "mocha --colors -w ./specs/node.js/*_specs.js",
     "test-browser": "webpack-dev-server 'mocha!./specs/browser/browser_reader_specs.js' --port  9091 --hot --inline --output-filename test.js"

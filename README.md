@@ -4,8 +4,8 @@ The purpose Streamable Buffers is to create and stream arrays of binary data.
 
 - Stream binary data out of an readable data stream (files, network)
 - Write binary data into writeable stream
-- Stream binary data to browser
 - Does not care about structure of binary data
+- ~~Stream binary data to browser~~ WIP
 
 # examples:
 
@@ -15,7 +15,7 @@ const fs = require('fs')
 const StreamableBuffers = require('streamable_buffers')
 
 const fileStream = fs.createWriteStream('data.bin')
-const dataStram = StreamableBuffers.getCreatorStream()
+const dataStream = StreamableBuffers.getCreatorStream()
 
 dataStream.pipe(fileStream)
 
@@ -23,7 +23,7 @@ dataStream.add(Buffer.from([1,2]))
 dataStream.add(Buffer.from([1,2]))
 dataStream.add(Buffer.from([1,2]))
 
-stream.done()
+dataStream.done()
 ```
 
 ## Stream binary array out of a file
@@ -36,16 +36,6 @@ const dataStream = fs.createReadStream('data.bin').pipe(StreamableBuffers.getRea
 dataStream.on('data', (buffer) => {
   // read buffer
 })
-```
-
-## Stream binary array to a browser client
-```javascript
-StreamableBuffers
-  .fetch('https:/example.com/data.bin')
-  .onData((buffer) => {
-    //read buffer
-  })
-
 ```
 
 ## Node.js API
@@ -64,11 +54,3 @@ creates a ReaderStream
 
 ### ReaderStream
 A Duplex stream that reader from a readable stream such as a file or network readable streams and emits the binary array items.
-
-## browser API
-
-### StreamableBuffers.fetch(url)
-Initiate an XmlHttpRequest to receive the requested url
-
-### StreamableBuffers.fetch(url).onData(callback)
-As soon as the request initiated by fetch receive enough bytes, the callback passed to onData is called. This callback receives an arrayBuffer containing the current binary element.
