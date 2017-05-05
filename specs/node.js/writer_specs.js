@@ -2,68 +2,43 @@ const chai = require('chai')
 const expect = chai.expect;
 const Readable = require('stream').Readable
 var concat = require('concat-stream')
-
+const streamBuffers = require('stream-buffers');
 const StreamableBuffers = require('../../lib')
 const SIZE_OF_INT = 4
 
 describe('StreamableBufferWriter', () => {
-  it('writes the number of elements in the first int of the stream', (callback) => {
-    const stream = StreamableBuffers.getCreatorStream(1)
+  let target, writer
 
-    const buffer = Buffer.alloc(SIZE_OF_INT)
-    buffer.writeUInt32BE(1)
-
-    stream.pipe(concat((output) => {
-      expect(output.readUInt32BE(0)).to.equal(1)
-      callback()
-    }))
-
-    stream.add(buffer)
-    stream.done()
+  beforeEach(() => {
+    target = new streamBuffers.WritableStreamBuffer()
+    writer = StreamableBuffers.createWriter(target)
   })
 
-  it('writes the size of the first element', (callback) => {
-    const stream = StreamableBuffers.getCreatorStream(1)
+  it('writes the size of the first element', () => {
     const buffer = createUintBuffer([1])
+    writer.write(buffer)
 
-    stream.pipe(concat((output) => {
-      expect(output.readUInt32BE(SIZE_OF_INT)).to.equal(SIZE_OF_INT)
-      callback()
-    }))
-
-    stream.add(buffer)
-    stream.done()
+    expect(target.getContents().readUInt32BE(0)).to.equal(SIZE_OF_INT)
   })
 
-  it('writes the first element', (callback) => {
-    const stream = StreamableBuffers.getCreatorStream(1)
+  it('writes the first element', () => {
     const buffer = createUintBuffer([1])
+    writer.write(buffer)
 
-    stream.pipe(concat((output) => {
-      expect(output.readUInt32BE(2 * SIZE_OF_INT)).to.equal(1)
-      callback()
-    }))
-
-    stream.add(buffer)
-    stream.done()
+    expect(target.getContents().readUInt32BE(SIZE_OF_INT, SIZE_OF_INT)).to.equal(1)
   })
 
-  it('can write several elements', (callback) => {
-    const stream = StreamableBuffers.getCreatorStream(3)
-
+  it('can write several elements', () => {
     const buffer1 = createUintBuffer([1])
     const buffer2 = createUintBuffer([2])
     const buffer3 = createUintBuffer([3])
 
-    stream.pipe(concat((output) => {
-      expect(output).to.deep.equal(createUintBuffer([3, SIZE_OF_INT, 1, SIZE_OF_INT, 2, SIZE_OF_INT, 3]))
-      callback()
-    }))
+    writer.write(buffer1)
+    writer.write(buffer2)
+    writer.write(buffer3)
 
-    stream.add(buffer1)
-    stream.add(buffer2)
-    stream.add(buffer3)
-    stream.done()
+    const expected = createUintBuffer([SIZE_OF_INT, 1, SIZE_OF_INT, 2, SIZE_OF_INT, 3])
+    expect(target.getContents()).to.deep.equal(expected)
   })
 })
 
